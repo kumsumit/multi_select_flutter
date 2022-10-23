@@ -79,7 +79,7 @@ class MultiSelectChipField<V> extends FormField<List<V>> {
   final double? chipWidth;
 
   final List<V>? initialValue;
-  final AutovalidateMode autovalidateMode;
+  final AutovalidateMode autoValidateMode;
   final FormFieldValidator<List<V>>? validator;
   final FormFieldSetter<List<V>>? onSaved;
   final GlobalKey<FormFieldState>? key;
@@ -107,7 +107,7 @@ class MultiSelectChipField<V> extends FormField<List<V>> {
     this.key,
     this.onSaved,
     this.validator,
-    this.autovalidateMode = AutovalidateMode.disabled,
+    this.autoValidateMode = AutovalidateMode.disabled,
     this.initialValue,
     this.itemBuilder,
     this.height,
@@ -119,7 +119,7 @@ class MultiSelectChipField<V> extends FormField<List<V>> {
             key: key,
             onSaved: onSaved,
             validator: validator,
-            autovalidateMode: autovalidateMode,
+            autovalidateMode: autoValidateMode,
             initialValue: initialValue ?? [],
             builder: (FormFieldState<List<V>> state) {
               _MultiSelectChipFieldView view = _MultiSelectChipFieldView<V>(
@@ -270,7 +270,7 @@ class __MultiSelectChipFieldViewState<V>
       _selectedValues.addAll(widget.initialValue!);
     }
     if (widget.scrollControl != null && widget.scroll)
-      WidgetsBinding.instance!.addPostFrameCallback((_) => _scrollToPosition());
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToPosition());
   }
 
   _scrollToPosition() {
@@ -368,7 +368,7 @@ class __MultiSelectChipFieldViewState<V>
                         ],
                       ),
                     )
-                  : Container(),
+                  : SizedBox(),
               widget.scroll
                   ? Container(
                       padding: widget.itemBuilder == null
@@ -379,7 +379,7 @@ class __MultiSelectChipFieldViewState<V>
                           MediaQuery.of(context).size.height * 0.08,
                       child: widget.scrollBar != null
                           ? Scrollbar(
-                              isAlwaysShown: widget.scrollBar!.isAlwaysShown,
+                              thumbVisibility: widget.scrollBar!.isAlwaysShown,
                               controller: _scrollController,
                               child: ListView.builder(
                                 controller: _scrollController,
@@ -429,21 +429,17 @@ class __MultiSelectChipFieldViewState<V>
           ),
         ),
         widget.state != null && widget.state!.hasError
-            ? Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 4, 0, 0),
-                    child: Text(
-                      widget.state!.errorText!,
-                      style: TextStyle(
-                        color: Colors.red[800],
-                        fontSize: 12.5,
-                      ),
-                    ),
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(4, 4, 0, 0),
+                child: Text(
+                  widget.state!.errorText!,
+                  style: TextStyle(
+                    color: Colors.red[800],
+                    fontSize: 12.5,
                   ),
-                ],
+                ),
               )
-            : Container(),
+            : SizedBox(),
       ],
     );
   }
@@ -480,27 +476,30 @@ class __MultiSelectChipFieldViewState<V>
                   )
                 : null
             : null,
-        label: Container(
+        label: SizedBox(
           width: widget.chipWidth,
-          child: Text(
-            item.label,
-            overflow: TextOverflow.ellipsis,
-            style: _selectedValues.contains(item.value)
-                ? TextStyle(
-                    color: widget.colorator != null &&
-                            widget.colorator!(item.value) != null
-                        ? widget.colorator!(item.value)!.withOpacity(1)
-                        : widget.selectedTextStyle != null
-                            ? widget.selectedTextStyle!.color
-                            : null)
-                : TextStyle(
-                    color: widget.textStyle != null
-                        ? widget.textStyle!.color ?? widget.chipColor
-                        : widget.chipColor,
-                    fontSize: widget.textStyle != null
-                        ? widget.textStyle!.fontSize
-                        : null,
-                  ),
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: Text(
+              item.label,
+              overflow: TextOverflow.ellipsis,
+              style: _selectedValues.contains(item.value)
+                  ? TextStyle(
+                      color: widget.colorator != null &&
+                              widget.colorator!(item.value) != null
+                          ? widget.colorator!(item.value)!.withOpacity(1)
+                          : widget.selectedTextStyle != null
+                              ? widget.selectedTextStyle!.color
+                              : null)
+                  : TextStyle(
+                      color: widget.textStyle != null
+                          ? widget.textStyle!.color ?? widget.chipColor
+                          : widget.chipColor,
+                      fontSize: widget.textStyle != null
+                          ? widget.textStyle!.fontSize
+                          : null,
+                    ),
+            ),
           ),
         ),
         selected: _selectedValues.contains(item.value),

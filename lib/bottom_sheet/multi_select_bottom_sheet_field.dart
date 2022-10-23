@@ -17,6 +17,15 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   /// Specify the button icon.
   final Icon? buttonIcon;
 
+  /// Specify the leading button icon.
+  final Icon? leadingButtonIcon;
+
+  /// Specify the button icon padding.
+  final EdgeInsets? buttonIconPadding;
+
+  /// Specify the leading button icon padding.
+  final EdgeInsets? leadingButtonIconPadding;
+
   /// List of items to select from.
   final List<MultiSelectItem<V>> items;
 
@@ -35,11 +44,17 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   /// Toggles search functionality.
   final bool searchable;
 
+  /// Toggles select all functionality. Default is false.
+  final bool selectAll;
+
   /// Text on the confirm button.
   final Text? confirmText;
 
   /// Text on the cancel button.
   final Text? cancelText;
+
+  /// Text on the select all button, if enabled.
+  final Text? selectAllText;
 
   /// An enum that determines which type of list to render.
   final MultiSelectListType? listType;
@@ -103,7 +118,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   /// Set the color of the check in the checkbox
   final Color? checkColor;
 
-  final AutovalidateMode autovalidateMode;
+  final AutovalidateMode autoValidateMode;
   final FormFieldValidator<List<V>>? validator;
   final FormFieldSetter<List<V>>? onSaved;
   final GlobalKey<FormFieldState>? key;
@@ -115,12 +130,17 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
     this.title,
     this.buttonText,
     this.buttonIcon,
+    this.leadingButtonIcon,
+    this.buttonIconPadding,
+    this.leadingButtonIconPadding,
     this.listType,
     this.decoration,
     this.onSelectionChanged,
     this.chipDisplay,
     this.initialValue,
+    this.selectAll = false,
     this.searchable = false,
+    this.selectAllText,
     this.confirmText,
     this.cancelText,
     this.selectedColor,
@@ -144,12 +164,12 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
     this.key,
     this.onSaved,
     this.validator,
-    this.autovalidateMode = AutovalidateMode.disabled,
+    this.autoValidateMode = AutovalidateMode.disabled,
   }) : super(
             key: key,
             onSaved: onSaved,
             validator: validator,
-            autovalidateMode: autovalidateMode,
+            autovalidateMode: autoValidateMode,
             initialValue: initialValue ?? [],
             builder: (FormFieldState<List<V>> state) {
               _MultiSelectBottomSheetFieldView view =
@@ -165,6 +185,9 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
                 initialValue: initialValue,
                 barrierColor: barrierColor,
                 buttonIcon: buttonIcon,
+                leadingButtonIcon: leadingButtonIcon,
+                buttonIconPadding: buttonIconPadding,
+                leadingButtonIconPadding: leadingButtonIconPadding,
                 buttonText: buttonText,
                 cancelText: cancelText,
                 chipDisplay: chipDisplay,
@@ -181,6 +204,8 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
                 searchHint: searchHint,
                 searchTextStyle: searchTextStyle,
                 searchable: searchable,
+                selectAll: selectAll,
+                selectAllText: selectAllText,
                 selectedColor: selectedColor,
                 separateSelectedItems: separateSelectedItems,
                 shape: shape,
@@ -196,6 +221,9 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
   final BoxDecoration? decoration;
   final Text? buttonText;
   final Icon? buttonIcon;
+  final Icon? leadingButtonIcon;
+  final EdgeInsets? buttonIconPadding;
+  final EdgeInsets? leadingButtonIconPadding;
   final List<MultiSelectItem<V>> items;
   final List<V>? initialValue;
   final Widget? title;
@@ -203,6 +231,8 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
   final void Function(List<V>)? onConfirm;
   final bool searchable;
   final Text? confirmText;
+  final bool selectAll;
+  final Text? selectAllText;
   final Text? cancelText;
   final MultiSelectListType? listType;
   final Color? selectedColor;
@@ -231,6 +261,9 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
     this.title,
     this.buttonText,
     this.buttonIcon,
+    this.leadingButtonIcon,
+    this.buttonIconPadding,
+    this.leadingButtonIconPadding,
     this.listType,
     this.decoration,
     this.onSelectionChanged,
@@ -239,7 +272,9 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
     this.initialValue,
     this.searchable = false,
     this.confirmText,
+    this.selectAll = false,
     this.cancelText,
+    this.selectAllText,
     this.selectedColor,
     this.initialChildSize,
     this.minChildSize,
@@ -267,6 +302,9 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
         title = field.title,
         buttonText = field.buttonText,
         buttonIcon = field.buttonIcon,
+        leadingButtonIcon = field.leadingButtonIcon,
+        buttonIconPadding = field.buttonIconPadding,
+        leadingButtonIconPadding = field.leadingButtonIconPadding,
         listType = field.listType,
         decoration = field.decoration,
         onSelectionChanged = field.onSelectionChanged,
@@ -274,8 +312,10 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
         chipDisplay = field.chipDisplay,
         initialValue = field.initialValue,
         searchable = field.searchable,
+        selectAll = field.selectAll,
         confirmText = field.confirmText,
         cancelText = field.cancelText,
+        selectAllText = field.selectAllText,
         selectedColor = field.selectedColor,
         initialChildSize = field.initialChildSize,
         minChildSize = field.minChildSize,
@@ -398,6 +438,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
             cancelText: widget.cancelText,
             confirmText: widget.confirmText,
             separateSelectedItems: widget.separateSelectedItems,
+            selectAllText: widget.selectAllText,
             initialValue: _selectedItems,
             onConfirm: (selected) {
               if (widget.state != null) {
@@ -409,6 +450,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
             onSelectionChanged: widget.onSelectionChanged,
             searchable: widget.searchable,
             title: widget.title,
+            selectAll: widget.selectAll,
             initialChildSize: widget.initialChildSize,
             minChildSize: widget.minChildSize,
             maxChildSize: widget.maxChildSize,
@@ -453,8 +495,17 @@ class __MultiSelectBottomSheetFieldViewState<V>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                widget.buttonText ?? Text("Select"),
-                widget.buttonIcon ?? Icon(Icons.arrow_downward),
+                if (widget.leadingButtonIcon != null)
+                  Padding(
+                    padding: widget.leadingButtonIconPadding ?? EdgeInsets.zero,
+                    child: widget.leadingButtonIcon,
+                  ),
+                Expanded(child: widget.buttonText ?? const Text("Select")),
+                if (widget.buttonIcon != null)
+                  Padding(
+                    padding: widget.buttonIconPadding ?? EdgeInsets.zero,
+                    child: widget.buttonIcon,
+                  ),
               ],
             ),
           ),
@@ -478,7 +529,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
                   ),
                 ],
               )
-            : Container(),
+            : SizedBox(),
       ],
     );
   }

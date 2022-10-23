@@ -20,6 +20,15 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
   /// Specify the button icon.
   final Icon? buttonIcon;
 
+  /// Specify the leading button icon.
+  final Icon? leadingButtonIcon;
+
+  /// Specify the button icon padding.
+  final EdgeInsets? buttonIconPadding;
+
+  /// Specify the leading button icon padding.
+  final EdgeInsets? leadingButtonIconPadding;
+
   /// The text at the top of the dialog.
   final Widget? title;
 
@@ -42,8 +51,14 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
   /// Toggles search functionality.
   final bool searchable;
 
+  /// Toggles select all functionality. Default is false.
+  final bool selectAll;
+
   /// Text on the confirm button.
   final Text? confirmText;
+
+  /// Text on the select all button, if enabled.
+  final Text? selectAllText;
 
   /// Text on the cancel button.
   final Text? cancelText;
@@ -97,7 +112,7 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
   /// Set the color of the check in the checkbox
   final Color? checkColor;
 
-  final AutovalidateMode autovalidateMode;
+  final AutovalidateMode autoValidateMode;
   final FormFieldValidator<List<V>>? validator;
   final FormFieldSetter<List<V>>? onSaved;
   final GlobalKey<FormFieldState>? key;
@@ -109,12 +124,17 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
     this.title,
     this.buttonText,
     this.buttonIcon,
+    this.leadingButtonIcon,
+    this.buttonIconPadding,
+    this.leadingButtonIconPadding,
     this.listType,
     this.decoration,
     this.onSelectionChanged,
     this.chipDisplay,
     this.searchable = false,
     this.confirmText,
+    this.selectAll = false,
+    this.selectAllText,
     this.cancelText,
     this.barrierColor,
     this.selectedColor,
@@ -135,13 +155,13 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
     this.onSaved,
     this.validator,
     this.initialValue,
-    this.autovalidateMode = AutovalidateMode.disabled,
+    this.autoValidateMode = AutovalidateMode.disabled,
     this.key,
   }) : super(
             key: key,
             onSaved: onSaved,
             validator: validator,
-            autovalidateMode: autovalidateMode,
+            autovalidateMode: autoValidateMode,
             initialValue: initialValue ?? [],
             builder: (FormFieldState<List<V>> state) {
               _MultiSelectDialogFieldView<V> field =
@@ -150,6 +170,9 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
                 items: items,
                 buttonText: buttonText,
                 buttonIcon: buttonIcon,
+                leadingButtonIcon: leadingButtonIcon,
+                buttonIconPadding: buttonIconPadding,
+                leadingButtonIconPadding: leadingButtonIconPadding,
                 chipDisplay: chipDisplay,
                 decoration: decoration,
                 listType: listType,
@@ -158,6 +181,8 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
                 initialValue: initialValue,
                 searchable: searchable,
                 confirmText: confirmText,
+                selectAll: selectAll,
+                selectAllText: selectAllText,
                 cancelText: cancelText,
                 barrierColor: barrierColor,
                 selectedColor: selectedColor,
@@ -186,6 +211,9 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
   final BoxDecoration? decoration;
   final Text? buttonText;
   final Icon? buttonIcon;
+  final Icon? leadingButtonIcon;
+  final EdgeInsets? buttonIconPadding;
+  final EdgeInsets? leadingButtonIconPadding;
   final Widget? title;
   final List<MultiSelectItem<V>> items;
   final void Function(List<V>)? onSelectionChanged;
@@ -194,6 +222,8 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
   final void Function(List<V>)? onConfirm;
   final bool? searchable;
   final Text? confirmText;
+  final bool? selectAll;
+  final Text? selectAllText;
   final Text? cancelText;
   final Color? barrierColor;
   final Color? selectedColor;
@@ -218,6 +248,9 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
     this.title,
     this.buttonText,
     this.buttonIcon,
+    this.leadingButtonIcon,
+    this.buttonIconPadding,
+    this.leadingButtonIconPadding,
     this.listType,
     this.decoration,
     this.onSelectionChanged,
@@ -226,6 +259,8 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
     this.initialValue,
     this.searchable,
     this.confirmText,
+    this.selectAll,
+    this.selectAllText,
     this.cancelText,
     this.barrierColor,
     this.selectedColor,
@@ -252,6 +287,9 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
         title = field.title,
         buttonText = field.buttonText,
         buttonIcon = field.buttonIcon,
+        leadingButtonIcon = field.leadingButtonIcon,
+        buttonIconPadding = field.buttonIconPadding,
+        leadingButtonIconPadding = field.leadingButtonIconPadding,
         listType = field.listType,
         decoration = field.decoration,
         onSelectionChanged = field.onSelectionChanged,
@@ -259,6 +297,8 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
         chipDisplay = field.chipDisplay,
         initialValue = field.initialValue,
         searchable = field.searchable,
+        selectAll = field.selectAll,
+        selectAllText = field.selectAllText,
         confirmText = field.confirmText,
         cancelText = field.cancelText,
         barrierColor = field.barrierColor,
@@ -381,6 +421,8 @@ class __MultiSelectDialogFieldViewState<V>
           initialValue: _selectedItems,
           searchable: widget.searchable ?? false,
           confirmText: widget.confirmText,
+          selectAll: widget.selectAll ?? false,
+          selectAllText: widget.selectAllText,
           cancelText: widget.cancelText,
           separateSelectedItems: widget.separateSelectedItems,
           onConfirm: (selected) {
@@ -432,8 +474,17 @@ class __MultiSelectDialogFieldViewState<V>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                widget.buttonText ?? const Text("Select"),
-                widget.buttonIcon ?? const Icon(Icons.arrow_downward),
+                if (widget.leadingButtonIcon != null)
+                  Padding(
+                    padding: widget.leadingButtonIconPadding ?? EdgeInsets.zero,
+                    child: widget.leadingButtonIcon,
+                  ),
+                Expanded(child: widget.buttonText ?? const Text("Select")),
+                if (widget.buttonIcon != null)
+                  Padding(
+                    padding: widget.buttonIconPadding ?? EdgeInsets.zero,
+                    child: widget.buttonIcon,
+                  ),
               ],
             ),
           ),

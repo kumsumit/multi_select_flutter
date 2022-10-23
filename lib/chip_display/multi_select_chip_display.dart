@@ -91,12 +91,12 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
       alignment: alignment ?? Alignment.centerLeft,
       padding: EdgeInsets.symmetric(horizontal: scroll ? 0 : 10),
       child: scroll
-          ? Container(
+          ? SizedBox(
               width: MediaQuery.of(context).size.width,
               height: height ?? MediaQuery.of(context).size.height * 0.08,
               child: scrollBar != null
                   ? Scrollbar(
-                      isAlwaysShown: scrollBar!.isAlwaysShown,
+                      thumbVisibility: scrollBar!.isAlwaysShown,
                       controller: _scrollController,
                       child: ListView.builder(
                         controller: _scrollController,
@@ -127,7 +127,7 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
   }
 
   Widget _buildItem(MultiSelectItem<V> item, BuildContext context) {
-    return Container(
+    return Padding(
       padding: const EdgeInsets.all(2.0),
       child: ChoiceChip(
         shape: shape as OutlinedBorder?,
@@ -139,7 +139,7 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
                     : icon!.color ?? Theme.of(context).primaryColor,
               )
             : null,
-        label: Container(
+        label: SizedBox(
           width: chipWidth,
           child: Text(
             item.label,
